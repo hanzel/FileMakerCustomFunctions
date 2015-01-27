@@ -1,0 +1,50 @@
+Let([
+  
+//    #_today = GetAsTimeStamp( "5/8/2015 2:00:07 AM" ) ;
+    #_today = Get( CurrentTimeStamp ) ;
+    #_the_date = Date( Month( #_today ); Day( #_today ) ; Year( #_today ) ) ;
+    #_dst_start = Date( "5"; "8" ; Year( #_today ) ) ;
+    #_dst_end = Date( "11"; "1" ; Year( #_today ) ) ;
+    #_the_time = Time( Hour( #_today ) ; Minute( #_today ) ; Seconds( #_today ) ) ;
+    #_the_hour = Hour( #_today ) ;
+    #_the_month = Month( #_today ) ;
+    #_the_day = Day( #_today ) ;
+
+    #_date_passes_dst_test =
+        Case(
+            #_the_date >= #_dst_start and
+            #_the_date <= #_dst_end
+            ; True
+            ; False
+        ) ;
+
+    #_time_passes_dst_test =
+        Case(
+            #_date_passes_dst_test = False
+            ; False
+            
+            ; #_the_month = Month( #_dst_start ) and
+              #_the_day = Day( #_dst_start ) and
+              #_the_hour < 2 // dst starts at 2am
+            ; False
+            
+            ; #_the_month = Month( #_dst_end ) and
+              #_the_day = Day( #_dst_end ) and
+              #_the_hour >= 2  // dst ends at 2am
+            ; False
+            
+            ; True
+        )	
+];
+
+    #_date_passes_dst_test and #_time_passes_dst_test
+)
+
+/* __________________________________________________
+
+NAME:       IsPacificDaylightSavings ( )
+PURPOSE:    Use to Determine if we are in PDT or PST; Returns Boolean
+HISTORY:
+	Created:	2015-01-27 20:05 ChST - Hanzel Morato
+	Modified:	
+*/
