@@ -1,0 +1,82 @@
+Let([
+//    #_datetime = GetAsTimestamp( "2/21/2014 12:36:38 AM" ) ;
+//    #_message_date = dateParseForMailMessage ( "2014-11-03T17:22:28-6:00" ) ;
+
+    #_datetime = GetAsTimestamp( _timestamp );
+    #_date = Date( Month( #_datetime ); Day( #_datetime ) ; Year( #_datetime ) ) ;
+    #_time = Time( Hour( #_datetime ) ; Minute( #_datetime ) ; Seconds( #_datetime ) ) ;
+    #_hour = Hour( #_time ) ;
+    #_minute = Minute( #_time ) ;
+    #_seconds = Seconds( #_time ) ;
+
+//    #_offset = "+02:00" ;
+    #_offset = offset ;
+
+    #_offset_symbol = Filter( #_offset ; "-+" ) ;
+    #_offset_hours = Hour( GetAsTime( LeftWords( #_offset ; 1 ) ) ) // extract the hours from offset
+
+];
+    Case(
+        // we are already at GMT if 0
+        #_offset_hours = 0
+        ; #_datetime
+
+
+        ; Case(
+            // handle subtraction
+            #_offset_symbol = "-"
+            ; Let([
+                  #_diff = #_hour - #_offset_hours ;
+
+                  #_date_gmt = Case(
+                      #_diff <= 0
+                      ; #_date - 1 // less 1 day
+                      
+                      ; #_date // same day
+                  ) ; // END CASE
+
+                  #_hour_gmt = Case(
+                      #_diff <= 0
+                      ; 12 - Abs( #_diff )
+                      ; #_diff
+                  ) // END CASE
+              ];
+                   GetAsTimestamp( #_date_gmt & " " & #_hour_gmt & ":" & #_minute & ":" & #_seconds)
+              ) // END LET
+            
+            // handle addition
+            ; Let([
+                  #_sum = #_hour + #_offset_hours ;
+
+                  #_date_gmt = Case(
+                      #_sum >= 24
+                      ; #_date + 1 // less 1 day
+                      
+                      ; #_date // same day
+                  ) ; // END CASE
+
+                  #_hour_gmt = Case(
+                      #_sum >= 24
+                      ; #_sum - 24 // next day math
+                      ; #_sum // same day
+                  ) // END CASE
+              ];
+                   GetAsTimestamp( #_date_gmt & " " & #_hour_gmt & ":" & #_minute & ":" & #_seconds)
+              ) // END LET
+        ) // END CASE
+
+
+
+    ) // END CASE
+)
+
+/* __________________________________________________
+
+NAME:       DateConvertGMTOffset ( _timestamp ; offset )
+PURPOSE:    Converts datetime with GMT offset to GMT timestamp: (2012-07-17T18:10:18+02:00)
+            DateConvertGMTOffset ( "2/21/2014 12:36:38 AM" ; "+02:00" )
+            Returns: 2/21/2014 2:36:38 AM
+HISTORY:
+	Created:	2015-01-27 20:05 ChST - Hanzel Morato
+	Modified:	
+*/
