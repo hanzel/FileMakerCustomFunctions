@@ -1,0 +1,36 @@
+Let([
+  #_mail_date_array = Substitute( CORRESPONDENCE::date_sent ; [" " ; "¶"] ; ["¶¶" ; "¶"] ; ["T" ; "¶"]);
+  #_date_text = GetValue ( #_mail_date_array ; 1 ) ;
+  #_date_text_array = Substitute( #_date_text; "-" ; "¶" ) ;
+  #_month = GetValue ( #_date_text_array ; 2 ) ;
+  #_day = GetValue ( #_date_text_array ; 3 ) ;
+  #_year = GetValue ( #_date_text_array ; 1 ) ;
+  #_time_text = GetValue ( #_mail_date_array ; 2 ) ;
+  #_time_text_array = Substitute( #_time_text; [":" ; "¶"]; ["-" ; "¶"]; ["+" ; "¶"] ) ;
+  #_time = GetValue ( #_time_text_array ; 1 ) & ":" & GetValue ( #_time_text_array ; 2 ) & ":" & GetValue ( #_time_text_array ; 3 ) ;
+  #_time_stamp = #_month & "/" & #_day & "/" & #_year & " " & #_time ;
+
+  #_time_with_offset = GetValue ( #_mail_date_array ; 2 ) ;
+  #_symbol = Filter( #_time_with_offset ; "-+" ) ;
+
+  #_timezone_offset = Right(
+    #_time_with_offset
+      ; Length( #_time_with_offset ) - Position ( #_time_with_offset ; #_symbol ; 1 ; 1 ) + 1
+    ) // END RIGHT
+];
+  
+  GetAsTimestamp ( #_month & "/" & #_day & "/" & #_year & " " & #_time) & ¶ &
+  #_timezone_offset
+)
+
+/* __________________________________________________
+
+NAME:       ParseMailMessageDate ( date )
+PURPOSE:    Parses date text returned by OSX Mail Server. Date comes in the form: 2012-07-17T18:10:18+02:00
+            ParseMailMessageDate ( 2012-07-17T18:10:18+02:00 )
+            Returns: 7/17/2012 6:10:18 PM
+            +02:00 // timezone GMT offset on 2nd line
+HISTORY:
+	Created:	2015-01-27 20:05 ChST - Hanzel Morato
+	Modified:	
+*/
