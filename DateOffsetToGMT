@@ -73,12 +73,12 @@ Let([
 
 /* __________________________________________________
 
-NAME:       DateConvertGMTOffset ( _timestamp ; offset )
+NAME:       DateOffsetToGMT ( _timestamp ; offset )
 PURPOSE:    Converts datetime with GMT offset to GMT timestamp: (2012-07-17T18:10:18+02:00)
-            DateConvertGMTOffset ( "2/21/2014 12:36:38 AM" ; "+02:00" )
+            DateOffsetToGMT ( "2/21/2014 12:36:38 AM" ; "+02:00" )
             Returns: 2/21/2014 10:36:38 AM
             
-            DateConvertGMTOffset ( "11/03/2014 05:22:28 PM" ; "-08:00" )
+            DateOffsetToGMT ( "11/03/2014 05:22:28 PM" ; "-08:00" )
             Returns: 11/04/2014 01:22:28 AM
 HISTORY:
 	Created:	2015-01-27 20:05 ChST - Hanzel Morato
